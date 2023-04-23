@@ -8,6 +8,7 @@ from ..embeds import embeddHandler as embedHandle
 
 UNUSED_DICE_DEFAULT = sys.maxsize
 
+
 def _roll(amount, die, total, embedMessage):
     for i in range(amount):
         roll = random.randint(1, die)
@@ -15,8 +16,8 @@ def _roll(amount, die, total, embedMessage):
         embedMessage = embedMessage + f"On die {i + 1} of {amount}d{die}: **{roll}**\n"
     return total, embedMessage
 
-def initRollingCommands(boot):
 
+def initRollingCommands(boot):
     @boot.slash_command(guild_ids=secrets.test_servers,
                         description="Roll multiple types of dice")
     async def rollmulti(
@@ -78,11 +79,10 @@ def initRollingCommands(boot):
 
         embed.add_field(name=f"Total", value=f"**{total}** + {modifier} = __**{total + modifier}**__", inline=False)
 
-
         await ctx.respond(embed=embed)
 
     @boot.slash_command(guild_ids=secrets.test_servers,
-                        description="Roll one type of dice")
+                        description="Roll with advantage")
     async def advantage(
             ctx: discord.ApplicationContext,
             modifier: discord.Option(int, description="Modifier", required=True),
@@ -109,16 +109,14 @@ def initRollingCommands(boot):
             roll = rolls[1]
             embedMessage = embedMessage + f"Selecting die 2 of 2d20: **{rolls[1]}**\n"
 
-
         embed.add_field(name=f"Die 1", value=embedMessage, inline=False)
-
 
         embed.add_field(name=f"Total", value=f"**{roll}** + {modifier} = __**{roll + modifier}**__", inline=False)
 
         await ctx.respond(embed=embed)
 
     @boot.slash_command(guild_ids=secrets.test_servers,
-                        description="Roll one type of dice")
+                        description="Roll with disadvantage")
     async def disadvantage(
             ctx: discord.ApplicationContext,
             modifier: discord.Option(int, description="Modifier", required=True),
@@ -148,5 +146,28 @@ def initRollingCommands(boot):
         embed.add_field(name=f"Die 1", value=embedMessage, inline=False)
 
         embed.add_field(name=f"Total", value=f"**{roll}** + {modifier} = __**{roll + modifier}**__", inline=False)
+
+        await ctx.respond(embed=embed)
+
+    @boot.slash_command(guild_ids=secrets.test_servers,
+                        description="Roll for initiative with Dexterity")
+    async def initiative(
+
+            ctx: discord.ApplicationContext,
+            dex: discord.Option(int, description="Dexterity Modifier", required=True),
+    ):
+
+        amount = 1
+        die = 20
+
+        embed = embedHandle._embedInit(ctx, "Initiative")
+        embedHandle._rollInit(embed, amount, die, dex)
+
+        total = 0
+        embedMessage = ""
+        total, embedMessage  = _roll(amount, die,  total, embedMessage)
+        embed.add_field(name=f"Die 1", value=embedMessage, inline=False)
+
+        embed.add_field(name=f"Total", value=f"**{total}** + {dex} = __**{total + dex}**__", inline=False)
 
         await ctx.respond(embed=embed)
