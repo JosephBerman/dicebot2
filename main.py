@@ -1,12 +1,13 @@
 import sys
+sys.path.append('/Users/waffles/PycharmProjects/bootkeys')
 
-import secrets
 import discord
+import bootkeys
 from src.commands import commands
-
+from src.database import sqlHandler
 UNUSED_DICE_DEFAULT = sys.maxsize
 
-
+#todo make cleaner
 
 boot = discord.Bot()
 
@@ -14,6 +15,8 @@ boot = discord.Bot()
 async def on_ready():
     print(f"We have logged in as {boot.user}")
 
-commands.initCommands(boot)
+sqldb = sqlHandler.sqlServer()
 
-boot.run(secrets.privateKey)
+commands.initCommands(boot, sqldb)
+
+boot.run(bootkeys.privateKey)

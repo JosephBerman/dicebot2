@@ -1,7 +1,7 @@
 # global
 import random
 import sys
-import secrets
+import bootkeys
 import discord
 
 from ..embeds import embeddHandler as embedHandle
@@ -17,8 +17,8 @@ def _roll(amount, die, total, embedMessage):
     return total, embedMessage
 
 
-def initRollingCommands(boot):
-    @boot.slash_command(guild_ids=secrets.test_servers,
+def initRollingCommands(boot, sqldb):
+    @boot.slash_command(guild_ids=bootkeys.test_servers,
                         description="Roll multiple types of dice")
     async def rollmulti(
             ctx: discord.ApplicationContext,
@@ -41,19 +41,19 @@ def initRollingCommands(boot):
         dice = [die1size, die2size, die3size, die4size, die5size]
         amounts = [die1amount, die2amount, die3amount, die4amount, die5amount]
 
-        embed = discord.Embed(title="Dice Roll", color=0x81a1c1)
+        embed = embedHandle._embedInit(ctx, "Multiple Dice Roll")
 
         total = 0
         for j in range(len(dice)):
             embedMessage = ""
-
             if dice[j] != UNUSED_DICE_DEFAULT and amounts[j] != UNUSED_DICE_DEFAULT:
                 total, embedMessage = _roll(amounts[j], dice[j], total, embedMessage)
-                embed.add_field(name=f"Die {j + 1}", value=embedMessage, inline=False)
+                embed.add_field(name=f"Die {j + 1}: {amounts[j]}d{dice[j]}", value=embedMessage, inline=False)
             if amounts[j] == UNUSED_DICE_DEFAULT and dice[j] != UNUSED_DICE_DEFAULT:
                 embed.add_field(name=f"Die {j + 1}", value=f"Requires amount of sides on die {j + 1}", inline=False)
             if dice[j] == UNUSED_DICE_DEFAULT and amounts[j] != UNUSED_DICE_DEFAULT:
                 embed.add_field(name=f"Die {j + 1}", value=f"Requires amount of dice {j + 1}", inline=False)
+
 
         embed.add_field(name=f"Total", value=f"**{total}** + {modifier} = __**{total + modifier}**__", inline=False)
 
@@ -61,7 +61,7 @@ def initRollingCommands(boot):
 
         await ctx.respond(embed=embed)
 
-    @boot.slash_command(guild_ids=secrets.test_servers,
+    @boot.slash_command(guild_ids=bootkeys.test_servers,
                         description="Roll one type of dice")
     async def roll(
             ctx: discord.ApplicationContext,
@@ -81,7 +81,7 @@ def initRollingCommands(boot):
 
         await ctx.respond(embed=embed)
 
-    @boot.slash_command(guild_ids=secrets.test_servers,
+    @boot.slash_command(guild_ids=bootkeys.test_servers,
                         description="Roll with advantage")
     async def advantage(
             ctx: discord.ApplicationContext,
@@ -115,7 +115,7 @@ def initRollingCommands(boot):
 
         await ctx.respond(embed=embed)
 
-    @boot.slash_command(guild_ids=secrets.test_servers,
+    @boot.slash_command(guild_ids=bootkeys.test_servers,
                         description="Roll with disadvantage")
     async def disadvantage(
             ctx: discord.ApplicationContext,
@@ -149,7 +149,7 @@ def initRollingCommands(boot):
 
         await ctx.respond(embed=embed)
 
-    @boot.slash_command(guild_ids=secrets.test_servers,
+    @boot.slash_command(guild_ids=bootkeys.test_servers,
                         description="Roll for initiative with Dexterity")
     async def initiative(
 
