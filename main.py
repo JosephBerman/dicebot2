@@ -1,22 +1,40 @@
+from time import strftime
 import sys
-sys.path.append('/Users/waffles/PycharmProjects/bootkeys')
-
 import discord
+import logging
+
+logging.basicConfig(
+    format='%(asctime)s.%(msecs)d %(name)s %(levelname)s %(message)s',
+    datefmt='%H:%M:%S',
+    level=logging.INFO,
+    handlers={
+        logging.FileHandler(strftime("logs/bootlog_%H_%M_%m_%d_%Y.log")),
+        logging.StreamHandler()
+
+    })
+
+logger = logging.getLogger("main.py")
+
+sys.path.append('/Users/waffles/PycharmProjects/bootkeys')
+logger.info("Added bootkeys to python path")
+
 import bootkeys
 from src.commands import commands
-from src.database import sqlHandler
-UNUSED_DICE_DEFAULT = sys.maxsize
+from src.database.mongoHandler import MongoHandler
 
-#todo make cleaner
+mongo = MongoHandler(bootkeys.mongodb_url)
+
+# todo make cleaner
+
 
 boot = discord.Bot()
+
 
 @boot.event
 async def on_ready():
     print(f"We have logged in as {boot.user}")
 
-sqldb = sqlHandler.sqlServer()
 
-commands.initCommands(boot, sqldb)
+commands.initCommands(boot, mongo)
 
 boot.run(bootkeys.privateKey)

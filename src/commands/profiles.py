@@ -1,34 +1,35 @@
 # global
+import asyncio
 import random
 import sys
 import bootkeys
 import discord
+import logging
+logger = logging.getLogger(__name__)
 
 from ..embeds import embeddHandler as embedHandle
-
-UNUSED_DICE_DEFAULT = sys.maxsize
-
-profile_options = ["Create", "Edit", "Delete"]
+from ..database.mongoHandler import MongoHandler
+from ..database.mongoHandler import MongoErr
 
 
-def initProfiles(boot, sqldb):
-    @boot.slash_command(guild_ids=bootkeys.test_servers,
-                        description="Create, view, or delete user profile")
-    async def profile(
-            ctx: discord.ApplicationContext,
-            options: discord.Option(str, choices=profile_options,
-                                    description="Create, Edit, or Delete profiles",
-                                    required=False),
+def initProfiles(boot, mongo: MongoHandler):
+    profiles = boot.create_group(
+        "profile", "Profile commands"
+    )
 
-    ):
-        embed = embedHandle._embedInit(ctx, title="Profile")
+    @profiles.command(guild_ids=bootkeys.test_servers,
+                      description="You must register before creating profiles")
+    async def register(ctx: discord.ApplicationContext):
+        await ctx.response.defer()
+        embed = embedHandle.embedInit(ctx, title="Profile")
 
-        print(options)
-        if options == profile_options[0]:
-            sql = "INSERT INTO profiles (user_id) VALUES (%s)"
-            value = [f'{ctx.author.id}']
+        validId = mongo.createProfile(ctx.author.id)
 
-            sqldb.insertRecord(sql, value)
-            embed.add_field(name="Created new profile", value=f"{options}")
+        if validId > 0:
+            embed.add_field(name="profile added", value=validId, inline=False)
+        else:
+            embed.add_field(name="Error Adding Profile", value=validId, inline=False)
 
-        await ctx.respond(embed=embed)
+        await ctx.followup.send(embed=embed)
+
+

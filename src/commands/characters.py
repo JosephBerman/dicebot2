@@ -3,13 +3,15 @@ import random
 import sys
 import bootkeys
 import discord
+import logging
+logger = logging.getLogger(__name__)
 
 from ..embeds import embeddHandler as embedHandle
+from ..database.mongoHandler import MongoHandler
+from ..database.mongoHandler import MongoErr
 
-UNUSED_DICE_DEFAULT = sys.maxsize
 
-
-def initCharacters(boot, sqldb):
+def initCharacters(boot, mongo: MongoHandler):
     @boot.slash_command(guild_ids=bootkeys.test_servers,
                         description="Create new character")
     async def new_character(
@@ -24,23 +26,26 @@ def initCharacters(boot, sqldb):
             wisdom: discord.Option(int, description="Wisdom", required=True),
             charisma: discord.Option(int, description="Charisma", required=True),
     ):
-        embed = embedHandle._embedInit(ctx, title="Profile")
+        await ctx.response.defer()
 
-        sql = "INSERT INTO characters (name, " \
-              "class, profiles_user_id, " \
-              "strength, dexterity, " \
-              "constitution, intelligence, " \
-              "wisdom, charisma) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        value = [name, cl, f"{ctx.author.id}",
-                 strength, dexterity,
-                 constitution, intelligence,
-                 wisdom, charisma]
+        embed = embedHandle.embedInit(ctx, title="Character")
 
-        sqldb.insertRecord(sql, value)
+        stats = {
+            "Class": cl,
+            "Strength": strength,
+            "Dexterity": dexterity,
+            "Constitution": constitution,
+            "Intelligence": intelligence,
+            "Wisdom": wisdom,
+            "Charisma": charisma
+        }
 
-        embed.add_field(name="Created new profile", value=f"{name}")
 
-        await ctx.respond(embed=embed)
+        mongo.createCharacter(uid=ctx.author.id, name=name, stats=stats)
+
+        embed.add_field(name="Created new character", value=f"{name}")
+
+        await ctx.followup.send(embed=embed)
 
     @boot.slash_command(guild_ids=bootkeys.test_servers,
                         description="Get all your characters")
@@ -48,16 +53,11 @@ def initCharacters(boot, sqldb):
             ctx: discord.ApplicationContext,
             name: discord.Option(str, description="Name", required=True),
     ):
-        embed = embedHandle._embedInit(ctx, title="Profile")
+        await ctx.response.defer()
+        embed = embedHandle.embedInit(ctx, title="Profile")
 
-        ch = 'characters'
-        pi = 'profiles_user_id'
-
-        sql = "SELECT * FROM characters WHERE profiles_user_id LIKE %s AND name LIKE %s"
-
-        val = [f"{ctx.author.id}", name]
-
-        tables = sqldb.retrieveRecord(sql, val)
-
-        embed.add_field(name="Characters", value=tables)
-        await ctx.respond(embed=embed)
+        character = mongo.getCharacter(uid=ctx.author.id, name=name)
+        logger.info(character)
+        #embed.add_field(name="Characters", value=character)
+        logger.info("Got Character")
+        await ctx.followup.send(embed=embed)

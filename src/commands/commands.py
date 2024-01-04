@@ -3,6 +3,8 @@ import random
 import sys
 import bootkeys
 import discord
+import logging
+logger = logging.getLogger(__name__)
 
 # local
 from .rolling import initRollingCommands
@@ -10,10 +12,14 @@ from .profiles import initProfiles
 from .characters import initCharacters
 from ..embeds import embeddHandler as embedHandle
 
-def initCommands(boot, sqldb):
-    initRollingCommands(boot, sqldb)  # from rolling.py
-    initProfiles(boot, sqldb)
-    initCharacters(boot, sqldb)
+
+def initCommands(boot, mongo):
+    initRollingCommands(boot)  # from rolling.py
+
+    initProfiles(boot, mongo)  # TODO move inits
+    initCharacters(boot, mongo)
+
+    logger.debug("Initiated all commands")
 
     @boot.slash_command(guild_ids=bootkeys.test_servers)
     async def ping(ctx):
@@ -23,10 +29,7 @@ def initCommands(boot, sqldb):
 
         await ctx.respond(embed=embed)
 
-
-
-
-    skill_types = ["Strength","Dexterity","Constitution","Intelligence","Wisdom","Charisma"]
+    skill_types = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]
 
     @boot.slash_command(guild_ids=bootkeys.test_servers,
                         description="Roll with advantage")
@@ -34,7 +37,4 @@ def initCommands(boot, sqldb):
             ctx: discord.ApplicationContext,
             skill: discord.Option(str, choices=skill_types, description="Skill to check", required=True),
     ):
-
-
-
         await ctx.respond(skill)
