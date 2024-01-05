@@ -82,7 +82,7 @@ def initCharacters(boot, mongo: MongoHandler):
         await ctx.response.defer()
 
         embed = embedHandle.embedInit(ctx, title="Get Active Character")
-        active = mongo.getActiveCharacterName(ctx.author.id)
+        active = mongo.getActiveCharacter(ctx.author.id)["name"]
 
         logger.debug("active character name: %s" % active)
 

@@ -49,10 +49,10 @@ class MongoHandler:
     def __getActiveCharacter(self, uid):
         return self.__users.find_one({"uid": uid})
 
-    def getActiveCharacterName(self, uid):
+    def getActiveCharacter(self, uid):
         character = self.__getActiveCharacter(uid)
         if character:
-            return self.__characters.find_one(character["active_character"])["name"]
+            return self.__characters.find_one(character["active_character"])
         else:
             return MongoErr.EMPTY
 
