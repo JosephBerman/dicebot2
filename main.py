@@ -4,7 +4,7 @@ import discord
 import logging
 
 logging.basicConfig(
-    format='%(asctime)s.%(msecs)d %(name)s %(levelname)s %(message)s',
+    format='%(asctime)s.%(msecs)d %(name)s %(funcName)s():%(lineno)s %(levelname)s %(message)s',
     datefmt='%H:%M:%S',
     level=logging.INFO,
     handlers={

@@ -1,4 +1,5 @@
 import pymongo
+from pymongo import ReturnDocument
 import logging
 from .mongoEnum import MongoErr
 
@@ -15,30 +16,67 @@ class MongoHandler:
 
         logger.debug("Created Mongo Handler")
 
-    def createProfile(self, uid):
+    def __profileExist(self, uid):
+        if self.__users.count_documents({"uid": uid}) > 0:
+            logger.debug("UID registered")
+            return True
+        else:
+            logger.debug("UID NOT registered")
+            return False
 
-        if self.__users.count_documents({"_id": uid}) > 0:
-            logger.debug("UID already registered")
-            return MongoErr.EXISTS
+    def __createProfile(self, uid):
 
-        x = self.__users.insert_one({"_id": uid, "Active_character": 0})
-
-        logger.debug("Successfully added user profile")
-        return x.inserted_id
-
-    def createCharacter(self, uid, name, stats: dict):
-        if self.__characters.count_documents({"name": name, "_id": uid}) > 0:
-            logger.debug("UID already registered")
-            return MongoErr.EXISTS
-
-        x = self.__characters.insert_one({"name": name, "user_id": uid, "stats": stats})
+        x = self.__users.insert_one({"uid": uid,
+                                     "active_character": 0})
 
         logger.debug("Successfully added user profile")
         return x.inserted_id
+
+    def __setActiveCharacter(self, uid, character_id):
+
+        self.__users.update_one({"uid": uid},
+                                {'$set': {"active_character": character_id}})
+
+    # Seperated for out facting api
+    def setActiveCharacter(self, uid, name):
+        character = self.__getCharacter(uid, name)
+        if character:
+            self.__setActiveCharacter(uid, character_id=character["_id"])
+            return MongoErr.SUCCESS
+        else:
+            return MongoErr.EMPTY
+
+    def __getActiveCharacter(self, uid):
+        return self.__users.find_one({"uid": uid})
+
+    def getActiveCharacterName(self, uid):
+        character = self.__getActiveCharacter(uid)
+        if character:
+            return self.__characters.find_one(character["active_character"])["name"]
+        else:
+            return MongoErr.EMPTY
+
+    def insertCharacter(self, uid, name, stats: dict):
+
+        if self.__profileExist(uid) is False:
+            logger.debug("profile does not exist, creating")
+            self.__createProfile(uid)
+            logger.debug("created profile")
+
+        x = self.__characters.insert_one({"name": name,
+                                          "user_id": uid,
+                                          "stats": stats})
+
+        logger.debug("Successfully added character")
+        return x.inserted_id
+
+    def __getCharacter(self, uid, name):
+        return self.__characters.find_one({"name": name,
+                                           "user_id": uid})
 
     def getCharacter(self, uid, name):
 
-        character = self.__characters.find_one({"name": name, "user_id": uid})
+        character = self.__getCharacter(uid, name)
 
         if character:
             return character
