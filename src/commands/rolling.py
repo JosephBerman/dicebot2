@@ -9,12 +9,11 @@ logger = logging.getLogger(__name__)
 from ..embeds import embeddHandler as embedHandle
 
 
-
 def _roll(amount, die, total, embedMessage):
     for i in range(amount):
-        roll = random.randint(1, die)
-        total += roll
-        embedMessage = embedMessage + f"On die {i + 1} of {amount}d{die}: **{roll}**\n"
+        result = random.randint(1, die)
+        total += result
+        embedMessage = embedMessage + f"On die {i + 1} of {amount}d{die}: **{result}**\n"
     return total, embedMessage
 
 
