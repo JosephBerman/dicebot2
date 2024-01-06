@@ -37,7 +37,7 @@ class MongoHandler:
         self.__users.update_one({"uid": uid},
                                 {'$set': {"active_character": character_id}})
 
-    # Seperated for out facting api
+    # Seperated for out facing api
     def setActiveCharacter(self, uid, name):
         character = self.__getCharacter(uid, name)
         if character:
@@ -49,12 +49,18 @@ class MongoHandler:
     def __getActiveCharacter(self, uid):
         return self.__users.find_one({"uid": uid})
 
+
     def getActiveCharacter(self, uid):
         character = self.__getActiveCharacter(uid)
         if character:
             return self.__characters.find_one(character["active_character"])
         else:
             return MongoErr.EMPTY
+
+    def __insertCharacter(self, uid, name, stats):
+        return self.__characters.insert_one({"name": name,
+                                             "user_id": uid,
+                                             "stats": stats})
 
     def insertCharacter(self, uid, name, stats: dict):
 
@@ -63,9 +69,7 @@ class MongoHandler:
             self.__createProfile(uid)
             logger.debug("created profile")
 
-        x = self.__characters.insert_one({"name": name,
-                                          "user_id": uid,
-                                          "stats": stats})
+        x = self.__insertCharacter(uid, name, stats)
 
         logger.debug("Successfully added character")
         return x.inserted_id
@@ -83,4 +87,25 @@ class MongoHandler:
         else:
             return "Could not find %s" % name
 
-    # TODO get all characters to dynamic select active character
+    # TODO Find a way to make this generic, current use is for search function
+    # This method will require another query which will only slow things down
+    # If not possible, conert this to only retreiving a list of names, dont need excess data
+    def __getCharacterNames(self, uid):
+        query = {"user_id": uid}
+
+        x = list(self.__characters.find(query))
+
+        logger.info("query: %s" % x)
+        return x
+
+    def getCharacterNames(self, uid):
+
+        character = self.__getCharacterNames(uid)
+
+        names = [x['name'] for x in character]
+
+        logger.debug ("list of names: %s", names)
+        if names:
+            return names
+        else:
+            return None

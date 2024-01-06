@@ -73,7 +73,7 @@ def initRollingCommands(boot):
             modifier: discord.Option(int, description="Modifier", required=True),
     ):
         embed = embedHandle.embedInit(ctx, "Dice Roll")
-        embedHandle._rollInit(embed, amount, die, modifier)
+        embedHandle.rollInit(embed, amount, die, modifier)
 
         total = 0
 
@@ -95,7 +95,7 @@ def initRollingCommands(boot):
         die = 20
 
         embed = embedHandle.embedInit(ctx, "Advantage")
-        embedHandle._rollInit(embed, amount, die, modifier)
+        embedHandle.rollInit(embed, amount, die, modifier)
 
         total = 0
         embedMessage = ""
@@ -129,7 +129,7 @@ def initRollingCommands(boot):
         die = 20
 
         embed = embedHandle.embedInit(ctx, "Disadvantage")
-        embedHandle._rollInit(embed, amount, die, modifier)
+        embedHandle.rollInit(embed, amount, die, modifier)
 
         total = 0
         embedMessage = ""
@@ -164,7 +164,7 @@ def initRollingCommands(boot):
         die = 20
 
         embed = embedHandle.embedInit(ctx, "Initiative")
-        embedHandle._rollInit(embed, amount, die, dex)
+        embedHandle.rollInit(embed, amount, die, dex)
 
         total = 0
         embedMessage = ""

@@ -14,11 +14,11 @@ from ..database.mongoHandler import MongoErr
 
 def initCharacters(boot, mongo: MongoHandler):
     # TODO change this to options from character commands. Personal preference
-    character = boot.create_group(
+    characterCommands = boot.create_group(
         "character", "Character commands"
     )
 
-    @character.command(guild_ids=bootkeys.test_servers,
+    @characterCommands.command(guild_ids=bootkeys.test_servers,
                        description="Create new character")
     async def new(
             ctx: discord.ApplicationContext,
@@ -53,7 +53,7 @@ def initCharacters(boot, mongo: MongoHandler):
 
         await ctx.followup.send(embed=embed)
 
-    @character.command(guild_ids=bootkeys.test_servers,
+    @characterCommands.command(guild_ids=bootkeys.test_servers,
                        description="Set your active character")
     async def set_active(
             ctx: discord.ApplicationContext,
@@ -70,11 +70,11 @@ def initCharacters(boot, mongo: MongoHandler):
             logger.debug("Could not find character")
             embed.add_field(name="Active Character", value="Could not find character")
 
-        logger.debug(character)
 
         await ctx.followup.send(embed=embed)
 
-    @character.command(guild_ids=bootkeys.test_servers,
+    @characterCommands.command(name="active",
+                       guild_ids=bootkeys.test_servers,
                        description="Get your active character")
     async def active_character(
             ctx: discord.ApplicationContext,
@@ -96,18 +96,28 @@ def initCharacters(boot, mongo: MongoHandler):
 
         await ctx.followup.send(embed=embed)
 
+    async def getCharacterList(ctx: discord.AutocompleteContext):
 
+        logger.info("In Get Character List")
+        characters = mongo.getCharacterNames(uid=ctx.interaction.user.id)
+        logger.info("Got characters %s" % characters)
 
-    @character.command(guild_ids=bootkeys.test_servers,
+        return characters
+
+    @characterCommands.command(guild_ids=bootkeys.test_servers,
                        description="Look up your character by name")
     async def search(
             ctx: discord.ApplicationContext,
-            name: discord.Option(str, description="Name", required=True),
+            choice: discord.Option(str, "Pick your character", autocomplete=getCharacterList)
     ):
         await ctx.response.defer()
-        embed = embedHandle.embedInit(ctx, title="Profile")
 
-        character = mongo.getCharacter(uid=ctx.author.id, name=name)
-        logger.debug(character)
-        embed.add_field(name="Characters", value=character)
+        embed = embedHandle.embedInit(ctx, title=choice)
+
+        character = mongo.getCharacter(ctx.author.id, choice)
+
+        embed = embedHandle.characterInit(embed, character)
         await ctx.followup.send(embed=embed)
+
+
+
