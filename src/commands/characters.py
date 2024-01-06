@@ -111,15 +111,15 @@ def initCharacters(boot, mongo: MongoHandler):
 
     @characterCommands.command(guild_ids=bootkeys.test_servers,
                        description="Look up your character by name")
-    async def search(
+    async def info(
             ctx: discord.ApplicationContext,
             name: discord.Option(str, "Pick your character", autocomplete=__getCharacterList)
     ):
         await ctx.response.defer()
 
-        embed = embedHandle.embedInit(ctx, title=choice)
+        embed = embedHandle.embedInit(ctx, title=name)
 
-        character = mongo.getCharacter(ctx.author.id, choice)
+        character = mongo.getCharacter(ctx.author.id, name)
 
         embed = embedHandle.characterInit(embed, character)
         await ctx.followup.send(embed=embed)
