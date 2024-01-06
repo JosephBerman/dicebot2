@@ -12,11 +12,21 @@ from ..database.mongoHandler import MongoHandler
 from ..database.mongoHandler import MongoErr
 
 
+
+
+
 def initCharacters(boot, mongo: MongoHandler):
     # TODO change this to options from character commands. Personal preference
     characterCommands = boot.create_group(
         "character", "Character commands"
     )
+
+    async def __getCharacterList(ctx: discord.AutocompleteContext):
+
+        characters = mongo.getCharacterNames(uid=ctx.interaction.user.id)
+        logger.info("Got characters %s" % characters)
+
+        return characters
 
     @characterCommands.command(guild_ids=bootkeys.test_servers,
                        description="Create new character")
@@ -54,10 +64,11 @@ def initCharacters(boot, mongo: MongoHandler):
         await ctx.followup.send(embed=embed)
 
     @characterCommands.command(guild_ids=bootkeys.test_servers,
+                               name="set-active",
                        description="Set your active character")
     async def set_active(
             ctx: discord.ApplicationContext,
-            name: discord.Option(str, description="Name", required=True),
+            name: discord.Option(str, "Pick your character", autocomplete=__getCharacterList)
     ):
         await ctx.response.defer()
 
@@ -96,19 +107,13 @@ def initCharacters(boot, mongo: MongoHandler):
 
         await ctx.followup.send(embed=embed)
 
-    async def getCharacterList(ctx: discord.AutocompleteContext):
 
-        logger.info("In Get Character List")
-        characters = mongo.getCharacterNames(uid=ctx.interaction.user.id)
-        logger.info("Got characters %s" % characters)
-
-        return characters
 
     @characterCommands.command(guild_ids=bootkeys.test_servers,
                        description="Look up your character by name")
     async def search(
             ctx: discord.ApplicationContext,
-            choice: discord.Option(str, "Pick your character", autocomplete=getCharacterList)
+            name: discord.Option(str, "Pick your character", autocomplete=__getCharacterList)
     ):
         await ctx.response.defer()
 
