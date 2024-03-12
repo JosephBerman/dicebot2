@@ -4,9 +4,51 @@ import sys
 import bootkeys
 import discord
 import logging
+
 logger = logging.getLogger(__name__)
 
 from ..embeds import embeddHandler as embedHandle
+
+def d4(amount=1):
+    total = 0
+    for i in range(amount):
+        total += random.randint(1, 4)
+    return total
+
+
+def d6(amount=1):
+    total = 0
+    for i in range(amount):
+        total += random.randint(1, 6)
+    return total
+
+
+def d8(amount=1):
+    total = 0
+    for i in range(amount):
+        total += random.randint(1, 8)
+    return total
+
+
+def d10(amount=1):
+    total = 0
+    for i in range(amount):
+        total += random.randint(1, 10)
+    return total
+
+
+def d12(amount=1):
+    total = 0
+    for i in range(amount):
+        total += random.randint(1, 12)
+    return total
+
+
+def d20(amount=1):
+    total = 0
+    for i in range(amount):
+        total += random.randint(1, 20)
+    return total
 
 
 def _roll(amount, die, total, embedMessage):

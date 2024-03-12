@@ -20,8 +20,8 @@ def rollInit(embed, amount, die, mod):
 
 def characterInit(embed, character: dict):
     statDict = character["stats"]
-    logger.info("dict: %s" % character)
-    logger.info("statDict: %s" % statDict)
+    logger.info("Got character: %s" % character)
+
     parsedStats = "Class: **%s**\n" \
                   "Race: **%s**\n" \
                   "Strength: **%d**\n" \

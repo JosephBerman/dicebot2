@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # local
-from .rolling import initRollingCommands, _roll
+from . import rolling
 from .profiles import initProfiles
 from .characters import initCharacters
 from ..embeds import embeddHandler as embedHandle
@@ -16,7 +16,8 @@ from ..database.mongoHandler import MongoErr
 
 
 def initCommands(boot, mongo):
-    initRollingCommands(boot)  # from rolling.py
+
+    rolling.initRollingCommands(boot)  # from rolling.py
 
     initProfiles(boot, mongo)  # TODO move inits
     initCharacters(boot, mongo)
@@ -45,7 +46,7 @@ def initCommands(boot, mongo):
 
         embed = embedHandle.embedInit(ctx, title="Skill check")
         active = mongo.getActiveCharacter(ctx.author.id)
-        logger.info(active)
+
         activeSkill = active["stats"][skill.lower()]
 
         logger.debug("Active character's %s: %d" % (skill, activeSkill))
@@ -57,7 +58,7 @@ def initCommands(boot, mongo):
         if activeSkill:
             logger.debug("Found active character")
 
-            roll = random.randint(1, 20)
+            roll = rolling.d20()
 
             mod = (activeSkill-10)//2
 

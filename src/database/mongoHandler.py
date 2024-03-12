@@ -17,7 +17,7 @@ class MongoHandler:
         logger.debug("Created Mongo Handler")
 
     def __profileExist(self, uid):
-        if self.__users.count_documents({"uid": uid}) > 0:
+        if self.__users.count_documents({"uesr_id": uid}) > 0:
             logger.debug("UID registered")
             return True
         else:
@@ -26,7 +26,7 @@ class MongoHandler:
 
     def __createProfile(self, uid):
 
-        x = self.__users.insert_one({"uid": uid,
+        x = self.__users.insert_one({"user_id": uid,
                                      "active_character": 0})
 
         logger.debug("Successfully added user profile")
@@ -34,7 +34,7 @@ class MongoHandler:
 
     def __setActiveCharacter(self, uid, character_id):
 
-        self.__users.update_one({"uid": uid},
+        self.__users.update_one({"user_id": uid},
                                 {'$set': {"active_character": character_id}})
 
     # Seperated for out facing api
@@ -47,7 +47,7 @@ class MongoHandler:
             return MongoErr.EMPTY
 
     def __getActiveCharacter(self, uid):
-        return self.__users.find_one({"uid": uid})
+        return self.__users.find_one({"user_id": uid})
 
 
     def getActiveCharacter(self, uid):
@@ -104,7 +104,6 @@ class MongoHandler:
 
         names = [x['name'] for x in character]
 
-        logger.debug ("list of names: %s", names)
         if names:
             return names
         else:

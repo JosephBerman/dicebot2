@@ -11,7 +11,7 @@ remaking my discord die bot on new python lib
 - Track initiative
 - 
 ## User profiles
-- Get all characters and have it autofill
+- Get all characters and have it autofill - partial, want to go back and make cleaner
 - Profile info
 
 ## Characters 
