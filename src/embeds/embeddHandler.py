@@ -13,6 +13,12 @@ def embedInit(ctx, title, color=0x81a1c1):
 
     return embed
 
+def embedInitMenus(interaction, title, color=0x81a1c1):
+    embed = discord.Embed(title=title, color=color)
+    embed.set_author(name=interaction.user.display_name, icon_url=interaction.user.display_avatar)
+    embed.set_footer(text=__version__)
+
+    return embed
 
 def rollInit(embed, amount, die, mod):
     embed.add_field(name=f"Dice Input:", value=f"{amount}d{die}+{mod}", inline=False)

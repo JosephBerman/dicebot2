@@ -1,1 +1,1 @@
-__version__="dicebot 2.1.0-alphav1"
+__version__="dicebot 2.2.0-alphav1"
