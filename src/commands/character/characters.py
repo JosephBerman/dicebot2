@@ -7,9 +7,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from ..embeds import embeddHandler as embedHandle
-from ..database.mongoHandler import MongoHandler
-from ..database.mongoHandler import MongoErr
+from src.embeds import embeddHandler as embedHandle
+from src.database.mongoHandler import MongoHandler
+from src.database.mongoHandler import MongoErr
 
 
 
@@ -44,7 +44,7 @@ def initCharacters(boot, mongo: MongoHandler):
     ):
         await ctx.response.defer()
 
-        embed = embedHandle.embedInit(ctx, title="Character")
+        embed = embedHandle.embedInitCxt(ctx, title="Character")
 
         stats = {
             "class": cl,
@@ -72,7 +72,7 @@ def initCharacters(boot, mongo: MongoHandler):
     ):
         await ctx.response.defer()
 
-        embed = embedHandle.embedInit(ctx, title="Set Active Character")
+        embed = embedHandle.embedInitCxt(ctx, title="Set Active Character")
 
         if mongo.setActiveCharacter(ctx.author.id, name) == MongoErr.SUCCESS:
             logger.debug("Found and setting active character")
@@ -92,7 +92,7 @@ def initCharacters(boot, mongo: MongoHandler):
     ):
         await ctx.response.defer()
 
-        embed = embedHandle.embedInit(ctx, title="Get Active Character")
+        embed = embedHandle.embedInitCxt(ctx, title="Get Active Character")
         active = mongo.getActiveCharacter(ctx.author.id)["name"]
 
         logger.debug("active character name: %s" % active)
@@ -117,7 +117,7 @@ def initCharacters(boot, mongo: MongoHandler):
     ):
         await ctx.response.defer()
 
-        embed = embedHandle.embedInit(ctx, title=name)
+        embed = embedHandle.embedInitCxt(ctx, title=name)
 
         character = mongo.getCharacter(ctx.author.id, name)
 

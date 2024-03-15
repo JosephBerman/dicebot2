@@ -47,7 +47,7 @@ def initRollingCommands(boot):
         dice = [die1size, die2size, die3size, die4size, die5size]
         amounts = [die1amount, die2amount, die3amount, die4amount, die5amount]
 
-        embed = embedHandle.embedInit(ctx, "Multiple Dice Roll")
+        embed = embedHandle.embedInitCxt(ctx, "Multiple Dice Roll")
 
         total = 0
         for j in range(len(dice)):
@@ -74,7 +74,7 @@ def initRollingCommands(boot):
             die: discord.Option(int, description="Sides on die", min_value=1, required=True),
             modifier: discord.Option(int, description="Modifier", required=True),
     ):
-        embed = embedHandle.embedInit(ctx, "Dice Roll")
+        embed = embedHandle.embedInitCxt(ctx, "Dice Roll")
         embedHandle.rollInit(embed, amount, die, modifier)
 
         total = 0
@@ -96,7 +96,7 @@ def initRollingCommands(boot):
         amount = 2
         die = 20
 
-        embed = embedHandle.embedInit(ctx, "Advantage")
+        embed = embedHandle.embedInitCxt(ctx, "Advantage")
         embedHandle.rollInit(embed, amount, die, modifier)
 
         total = 0
@@ -130,7 +130,7 @@ def initRollingCommands(boot):
         amount = 2
         die = 20
 
-        embed = embedHandle.embedInit(ctx, "Disadvantage")
+        embed = embedHandle.embedInitCxt(ctx, "Disadvantage")
         embedHandle.rollInit(embed, amount, die, modifier)
 
         total = 0
@@ -165,7 +165,7 @@ def initRollingCommands(boot):
         amount = 1
         die = 20
 
-        embed = embedHandle.embedInit(ctx, "Initiative")
+        embed = embedHandle.embedInitCxt(ctx, "Initiative")
         embedHandle.rollInit(embed, amount, die, dex)
 
         total = 0
