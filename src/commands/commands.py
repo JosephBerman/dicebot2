@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 # local
 from .rolling import initRollingCommands
 from .profiles import initProfiles
-from src.commands.character.characters import initCharacters
-from src.commands.character.skills import initSkills
+from src.commands.character.to_be_removed.characters import initCharacters
+from src.commands.character.to_be_removed.skills_old import initSkills
 
 
 def initCommands(boot, mongo):

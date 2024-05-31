@@ -15,32 +15,34 @@ from src.database.mongoHandler import MongoErr
 
 base_stats = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]
 
+skillList = [
+    "Acrobatics",
+    "Animal Handling",
+    "Arcana",
+    "Athletics",
+    "Deception",
+    "History",
+    "Insight",
+    "Intimidation",
+    "Investigation",
+    "Medicine",
+    "Nature",
+    "Perception",
+    "Performance",
+    "Persuasion",
+    "Religion",
+    "Sleight of Hand",
+    "Stealth",
+    "Survival"
+]
+
 
 def initSkills(boot, mongo: MongoHandler):
     # TODO change this to options from skill commands. Personal preference
     skillCommands = boot.create_group(
         "skill", "Skill commands"
     )
-    skillList = [
-        "Acrobatics",
-        "Animal Handling",
-        "Arcana",
-        "Athletics",
-        "Deception",
-        "History",
-        "Insight",
-        "Intimidation",
-        "Investigation",
-        "Medicine",
-        "Nature",
-        "Perception",
-        "Performance",
-        "Persuasion",
-        "Religion",
-        "Sleight of Hand",
-        "Stealth",
-        "Survival"
-    ]
+
     selectOptions = []
     for i in skillList:
         selectOptions.append(
@@ -129,7 +131,6 @@ def initSkills(boot, mongo: MongoHandler):
     #         #TODO decide how to choose between skill or save
     #         save: discord.Option(str, choices=base_stats, description="Save to check", required=True),
     # ):
-
 
     # TODO change skills to list of skills, need to add proficeincies and skills to base of character stats
     # async def skill(
